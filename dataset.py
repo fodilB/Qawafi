@@ -10,7 +10,16 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 
 from config_manager import ConfigManager
-
+BASIC_HARAQAT = {
+    'َ': 'Fatha              ',
+    'ً': 'Fathatah           ',
+    'ُ': 'Damma              ',
+    'ٌ': 'Dammatan           ',
+    'ِ': 'Kasra              ',
+    'ٍ': 'Kasratan           ',
+    'ْ': 'Sukun              ',
+    'ّ': 'Shaddah            ',
+}
 
 class DiacritizationDataset(Dataset):
     """
@@ -28,6 +37,18 @@ class DiacritizationDataset(Dataset):
         "Denotes the total number of samples"
         return len(self.list_ids)
 
+    def preprocess(self, book):
+      out = ""
+      i = 0 
+      while( i < len(book)):
+        if i < len(book):
+          if book[i] in BASIC_HARAQAT and book[i+1] in BASIC_HARAQAT:
+            i += 1
+            continue
+        out += book[i]
+        i += 1
+      return out
+
     def __getitem__(self, index):
         "Generates one sample of data"
         # Select sample
@@ -43,9 +64,14 @@ class DiacritizationDataset(Dataset):
             return inputs, targets, data[0]
 
         data = self.data[id]
+        non_cleaned = data
         data = self.text_encoder.clean(data)
+        try:
+          text, inputs, diacritics = util.extract_haraqat(data)
+        except:
+          text, inputs, diacritics = util.extract_haraqat(self.preprocess(data))
+          print(data)
 
-        text, inputs, diacritics = util.extract_haraqat(data)
         inputs = torch.Tensor(self.text_encoder.input_to_sequence("".join(inputs)))
         diacritics = torch.Tensor(self.text_encoder.target_to_sequence(diacritics))
 
@@ -111,7 +137,8 @@ def load_training_data(config_manager: ConfigManager, loader_parameters):
             train_data = [
                 text
                 for text in train_data
-                if len(text) <= config_manager.config["max_len"]
+                if len(text) <= config_manager.config["max_len"] and 
+                len(text) > 0 
             ]
         training_set = DiacritizationDataset(
             config_manager, [idx for idx in range(len(train_data))], train_data
@@ -185,7 +212,8 @@ def load_validation_data(config_manager: ConfigManager, loader_parameters):
             valid_data = file.readlines()
 
         valid_data = [
-            text for text in valid_data if len(text) <= config_manager.config["max_len"]
+            text for text in valid_data if len(text) <= config_manager.config["max_len"] and 
+            len(text) > 0 
         ]
         valid_dataset = DiacritizationDataset(
             config_manager, [idx for idx in range(len(valid_data))], valid_data
