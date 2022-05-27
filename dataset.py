@@ -41,7 +41,7 @@ class DiacritizationDataset(Dataset):
       out = ""
       i = 0 
       while( i < len(book)):
-        if i < len(book):
+        if i < len(book) - 1:
           if book[i] in BASIC_HARAQAT and book[i+1] in BASIC_HARAQAT:
             i += 1
             continue
