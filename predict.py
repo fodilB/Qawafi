@@ -9,6 +9,10 @@ from torch.cuda.amp import autocast
 from torch.utils.tensorboard.writer import SummaryWriter
 from tqdm.notebook import tqdm
 from tqdm import trange
+from util.text_encoders import (
+    ArabicEncoderWithStartSymbol,
+)
+from diacritization_evaluation import util 
 
 from config_manager import ConfigManager
 from dataset import load_iterators
@@ -99,8 +103,8 @@ class GeneralTrainer(Trainer):
       if load_optimizer:
           self.optimizer.load_state_dict(saved_model["optimizer_state_dict"])
       self.global_step = saved_model["global_step"] + 1
-      
-      class DiacritizationTester(GeneralTrainer):
+
+class DiacritizationTester(GeneralTrainer):
     def __init__(self, config_path: str, model_kind: str) -> None:
         self.config_path = config_path
         self.model_kind = model_kind
@@ -122,62 +126,53 @@ class GeneralTrainer(Trainer):
         self.load_model(model_path=self.config["test_model_path"], load_optimizer=False)
         self.load_diacritizer()
         self.diacritizer.set_model(self.model)
-
         self.initialize_model()
 
-def collate_fn(data):
-    """
-    Padding the input and output sequences
-    """
+    def collate_fn(self, data):
+        """
+        Padding the input and output sequences
+        """
 
-    def merge(sequences):
-        lengths = [len(seq) for seq in sequences]
-        padded_seqs = torch.zeros(len(sequences), max(lengths)).long()
-        for i, seq in enumerate(sequences):
-            end = lengths[i]
-            padded_seqs[i, :end] = seq[:end]
-        return padded_seqs, lengths
+        def merge(sequences):
+            lengths = [len(seq) for seq in sequences]
+            padded_seqs = torch.zeros(len(sequences), max(lengths)).long()
+            for i, seq in enumerate(sequences):
+                end = lengths[i]
+                padded_seqs[i, :end] = seq[:end]
+            return padded_seqs, lengths
 
-    data.sort(key=lambda x: len(x[0]), reverse=True)
+        data.sort(key=lambda x: len(x[0]), reverse=True)
 
-    # separate source and target sequences
-    src_seqs, trg_seqs, original = zip(*data)
+        # separate source and target sequences
+        src_seqs, trg_seqs, original = zip(*data)
 
-    # merge sequences (from tuple of 1D tensor to 2D tensor)
-    src_seqs, src_lengths = merge(src_seqs)
-    trg_seqs, trg_lengths = merge(trg_seqs)
+        # merge sequences (from tuple of 1D tensor to 2D tensor)
+        src_seqs, src_lengths = merge(src_seqs)
+        trg_seqs, trg_lengths = merge(trg_seqs)
 
-    batch = {
-        "original": original,
-        "src": src_seqs,
-        "target": trg_seqs,
-        "lengths": torch.LongTensor(src_lengths),  # src_lengths = trg_lengths
-    }
-    return batch
+        batch = {
+            "original": original,
+            "src": src_seqs,
+            "target": trg_seqs,
+            "lengths": torch.LongTensor(src_lengths),  # src_lengths = trg_lengths
+        }
+        return batch
+
+        
+    def get_batch(self, sentence):
+      data = self.text_encoder.clean(sentence)
+      text, inputs, diacritics = util.extract_haraqat(data)
+      inputs = torch.Tensor(self.text_encoder.input_to_sequence("".join(inputs)))
+      diacritics = torch.Tensor(self.text_encoder.target_to_sequence(diacritics))
+      batch = self.collate_fn([(inputs, diacritics, text)])
+      return batch
   
-  from util.text_encoders import (
-    ArabicEncoderWithStartSymbol,
-)
-from torch.utils.data import DataLoader, Dataset
+    def infer(self, sentence):
+        self.model.eval()
+        batch = self.get_batch(sentence)
+        predicted = self.diacritizer.diacritize_batch(batch)
+        return predicted
 
-
-def get_batch(sentence):
-  data = text_encoder.clean(sentence)
-  text, inputs, diacritics = util.extract_haraqat(data)
-  inputs = torch.Tensor(text_encoder.input_to_sequence("".join(inputs)))
-  diacritics = torch.Tensor(text_encoder.target_to_sequence(diacritics))
-  batch = collate_fn([(inputs, diacritics, text)])
-  return batch
-
-def __main__():
-  text_encoder = ArabicEncoderWithStartSymbol(
-                cleaner_fn='valid_arabic_cleaners'
-            )
-  tester = DiacritizationTester('config/cbhg.yml', 'cbhg')
-  tester.model.eval()
-  tester.diacritizer.set_model(tester.model)
-  sentence = "شراب النجيل"
-  batch = get_batch(sentence)
-  predicted = tester.diacritizer.diacritize_batch(batch)
-  print(predicted)
-    
+tester = DiacritizationTester('config/cbhg.yml', 'cbhg')
+print(tester.infer("السلام عليكم"))
+      
