@@ -2,7 +2,7 @@ session_name: base
 
 data_directory: "data"
 data_type: "CA_MSA"
-log_directory: "log_dir"
+log_directory: "/content/drive/MyDrive/Research/Barmajan/Diacritization/log_dir"
 load_training_data: true
 load_test_data: false
 load_validation_data: true
