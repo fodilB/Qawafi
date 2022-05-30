@@ -172,7 +172,4 @@ class DiacritizationTester(GeneralTrainer):
         batch = self.get_batch(sentence)
         predicted = self.diacritizer.diacritize_batch(batch)
         return predicted
-
-tester = DiacritizationTester('config/cbhg.yml', 'cbhg')
-print(tester.infer("السلام عليكم"))
       
