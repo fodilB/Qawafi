@@ -6,3 +6,4 @@ ruamel.yaml==0.16.12
 tensorboard==2.4.0
 diacritization-evaluation==0.5
 tqdm==4.56.0
+pyarabic
