@@ -26,7 +26,7 @@ from util.utils import (
     plot_alignment,
     repeater,
 )
-
+import gdown
 
 class Trainer:
     def run(self):
@@ -106,6 +106,10 @@ class GeneralTrainer(Trainer):
 
 class DiacritizationTester(GeneralTrainer):
     def __init__(self, config_path: str, model_kind: str) -> None:
+        if config_path == 'config/test.yml':
+          print("Exporting the pretrained models ... ")
+          url = 'https://drive.google.com/uc?id=1dG9xhsfrTs4euDiUht0FRydaU5fl4_8U' 
+          gdown.cached_download(url,'model.zip', quiet=False, postprocess=gdown.extractall)
         self.config_path = config_path
         self.model_kind = model_kind
         self.config_manager = ConfigManager(
@@ -171,5 +175,4 @@ class DiacritizationTester(GeneralTrainer):
         self.model.eval()
         batch = self.get_batch(sentence)
         predicted = self.diacritizer.diacritize_batch(batch)
-        return predicted
-      
+        return predicted[0]
