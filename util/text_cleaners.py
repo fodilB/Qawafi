@@ -68,6 +68,8 @@ def remove_tanween_on_alef(text):
   return text_copy
 
 def valid_arabic_cleaners(text):
+    text = filter(lambda char: char in VALID_ARABIC, text)
+    text = collapse_whitespace(''.join(list(text)))
     text = text.strip()
     out = ""
     i = 0
