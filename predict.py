@@ -108,7 +108,7 @@ class DiacritizationTester(GeneralTrainer):
     def __init__(self, config_path: str, model_kind: str) -> None:
         if config_path == 'config/test.yml':
           print("Exporting the pretrained models ... ")
-          url = 'https://drive.google.com/uc?id=1dG9xhsfrTs4euDiUht0FRydaU5fl4_8U' 
+          url = 'https://drive.google.com/uc?id=12aYNY7cbsLNzhdPdC2K3u1sgrb1lpzwO' 
           gdown.cached_download(url,'model.zip', quiet=False, postprocess=gdown.extractall)
         self.config_path = config_path
         self.model_kind = model_kind
