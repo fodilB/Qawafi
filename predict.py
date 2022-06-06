@@ -98,7 +98,7 @@ class GeneralTrainer(Trainer):
           last_model_path = model_path
 
       print(f"loading from {last_model_path}")
-      saved_model = torch.load(last_model_path)
+      saved_model = torch.load(last_model_path, torch.device(self.config.get("device"))
       self.model.load_state_dict(saved_model["model_state_dict"])
       if load_optimizer:
           self.optimizer.load_state_dict(saved_model["optimizer_state_dict"])
