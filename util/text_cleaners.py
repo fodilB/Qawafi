@@ -94,6 +94,11 @@ def valid_arabic_cleaners(text):
       # don't allow harakah followed by shaddah or tanween
       if i < len(text) - 1 and text[i] in harakat and  text[i+1] in tnween_chars+sukun+shadda_chars:
         i += 1
+        continue
+      
+      # don't allow harkah on space
+      if i> 0 and text[i] in all_tashkeel and text[i-1] == " " :
+        i += 1
         continue 
 
       # don't allow consecutive haraqat # add condition to remove two consecutvei tanween and sukun
