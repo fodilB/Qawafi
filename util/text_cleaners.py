@@ -106,7 +106,8 @@ def valid_arabic_cleaners(text):
         if text[i-2] in all_tashkeel: # in case there is a tashkeelah before alef
           continue
         else:
-          out = out[:i-1]+harakat[1]+"ا"
+          out = text[:i-1]+harakat[1]+"ا"
+          i += 1 
          
 
       # don't allow consecutive haraqat # add condition to remove two consecutvei tanween and sukun
