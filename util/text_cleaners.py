@@ -99,7 +99,15 @@ def valid_arabic_cleaners(text):
       # don't allow harkah on space
       if i> 0 and text[i] in all_tashkeel and text[i-1] == " " :
         i += 1
-        continue 
+        continue
+
+      # don't allow harkah on alef
+      if i> 1 and text[i] in harakat and text[i-1] in ["ا"] :
+        if text[i-2] in all_tashkeel: # in case there is a tashkeelah before alef
+          continue
+        else:
+          out = out[:i-1]+harakat[1]+"ا"
+         
 
       # don't allow consecutive haraqat # add condition to remove two consecutvei tanween and sukun
       if not(i > 0 and not_valid_tashkeel_comb((text[i], text[i-1]))):
