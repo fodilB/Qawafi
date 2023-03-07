@@ -77,3 +77,22 @@ class Seq2SeqDiacritizer(Diacritizer):
             sentences.append(sentence)
 
         return sentences
+
+class GPTDiacritizer(Diacritizer):
+    def diacritize_batch(self, batch):
+        self.model.eval()
+        inputs = batch["src"]
+        lengths = batch["lengths"]
+        outputs = self.model(inputs.to(self.device), lengths.to("cpu"))
+        diacritics = outputs["diacritics"]
+        predictions = torch.max(diacritics, 2).indices
+        sentences = []
+
+        for src, prediction in zip(inputs, predictions):
+            sentence = self.text_encoder.combine_text_and_haraqat(
+                list(src.detach().cpu().numpy()),
+                list(prediction.detach().cpu().numpy()),
+            )
+            sentences.append(sentence)
+
+        return sentences

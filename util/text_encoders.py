@@ -1,6 +1,7 @@
 from util import text_cleaners
 from typing import Dict, List, Optional
 from util.constants import ALL_POSSIBLE_HARAQAT
+import sentencepiece as spm
 
 
 class TextEncoder:
@@ -13,6 +14,7 @@ class TextEncoder:
         cleaner_fn: Optional[str] = None,
         reverse_input: bool = False,
         reverse_target: bool = False,
+        sp_model_path = None,
     ):
         if cleaner_fn:
             self.cleaner_fn = getattr(text_cleaners, cleaner_fn)
@@ -22,9 +24,16 @@ class TextEncoder:
         self.input_symbols: List[str] = [TextEncoder.pad] + input_chars
         self.target_symbols: List[str] = [TextEncoder.pad] + target_charts
 
-        self.input_symbol_to_id: Dict[str, int] = {
-            s: i for i, s in enumerate(self.input_symbols)
-        }
+        if sp_model_path is not None:
+          self.input_symbol_to_id: Dict[str, int] = {
+              s: i for i, s in enumerate(self.input_symbols)
+          }
+        else:
+          sp_model = spm.SentencePieceProcessor()
+          sp_model.load(sp_model_path + 'sp.model')
+          self.input_symbol_to_id: Dict[str, int] = {
+              s: sp_model.PieceToId(s) for s in self.input_symbols
+          }
         self.input_id_to_symbol: Dict[int, str] = {
             i: s for i, s in enumerate(self.input_symbols)
         }
@@ -41,6 +50,7 @@ class TextEncoder:
         self.input_pad_id = self.input_symbol_to_id[self.pad]
         self.target_pad_id = self.target_symbol_to_id[self.pad]
         self.start_symbol_id = None
+
 
     def input_to_sequence(self, text: str) -> List[int]:
         if self.reverse_input:
@@ -103,6 +113,7 @@ class BasicArabicEncoder(TextEncoder):
         cleaner_fn="basic_cleaners",
         reverse_input: bool = False,
         reverse_target: bool = False,
+        sp_model_path = None 
     ):
         input_chars: List[str] = list("بض.غىهظخة؟:طس،؛فندؤلوئآك-يذاصشحزءمأجإ ترقعث")
         target_charts: List[str] = list(ALL_POSSIBLE_HARAQAT.keys())
@@ -113,6 +124,7 @@ class BasicArabicEncoder(TextEncoder):
             cleaner_fn=cleaner_fn,
             reverse_input=reverse_input,
             reverse_target=reverse_target,
+            sp_model_path = sp_model_path
         )
 
 
@@ -122,6 +134,7 @@ class ArabicEncoderWithStartSymbol(TextEncoder):
         cleaner_fn="basic_cleaners",
         reverse_input: bool = False,
         reverse_target: bool = False,
+        sp_model_path = None,
     ):
         input_chars: List[str] = list("بض.غىهظخة؟:طس،؛فندؤلوئآك-يذاصشحزءمأجإ ترقعث")
         # the only difference from the basic encoder is adding the start symbol
@@ -133,6 +146,7 @@ class ArabicEncoderWithStartSymbol(TextEncoder):
             cleaner_fn=cleaner_fn,
             reverse_input=reverse_input,
             reverse_target=reverse_target,
+            sp_model_path = sp_model_path,
         )
 
         self.start_symbol_id = self.target_symbol_to_id["s"]

@@ -10,6 +10,7 @@ import torch
 
 from models.baseline import BaseLineModel
 from models.cbhg import CBHGModel
+from models.gpt import GPTModel 
 from models.seq2seq import Decoder as Seq2SeqDecoder, Encoder as Seq2SeqEncoder, Seq2Seq
 from models.tacotron_based import (
     Decoder as TacotronDecoder,
@@ -34,6 +35,7 @@ class ConfigManager:
             "cbhg",
             "seq2seq",
             "tacotron_based",
+            "gpt"
         ]
         if model_kind not in available_models:
             raise TypeError(f"model_kind must be in {available_models}")
@@ -60,6 +62,7 @@ class ConfigManager:
         self.prediction_dir = Path(os.path.join(self.base_dir, "predictions"))
         self.plot_dir = Path(os.path.join(self.base_dir, "plots"))
         self.models_dir = Path(os.path.join(self.base_dir, "models"))
+        self.sp_model_path = self.config["sp_model_path"]
         self.text_encoder: TextEncoder = self.get_text_encoder()
         self.config["len_input_symbols"] = len(self.text_encoder.input_symbols)
         self.config["len_target_symbols"] = len(self.text_encoder.target_symbols)
@@ -216,6 +219,13 @@ class ConfigManager:
         elif self.model_kind == "baseline":
             return self.get_baseline()
 
+        elif self.model_kind == "gpt":
+            return self.get_gpt()
+
+    def get_gpt(self):
+        model = GPTModel(self.config["base_model_path"])
+        return model
+
     def get_baseline(self):
         model = BaseLineModel(
             embedding_dim=self.config["embedding_dim"],
@@ -309,11 +319,14 @@ class ConfigManager:
         ]:
             raise Exception(f"cleaner is not known {self.config['text_cleaner']}")
 
+        
         if self.config["text_encoder"] == "BasicArabicEncoder":
-            text_encoder = BasicArabicEncoder(cleaner_fn=self.config["text_cleaner"])
+            text_encoder = BasicArabicEncoder(cleaner_fn=self.config["text_cleaner"],
+                sp_model_path = self.sp_model_path)
         elif self.config["text_encoder"] == "ArabicEncoderWithStartSymbol":
             text_encoder = ArabicEncoderWithStartSymbol(
-                cleaner_fn=self.config["text_cleaner"]
+                cleaner_fn=self.config["text_cleaner"],
+                sp_model_path = self.sp_model_path
             )
         else:
             raise Exception(

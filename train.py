@@ -7,6 +7,7 @@ import torch
 from trainer import (
     CBHGTrainer,
     Seq2SeqTrainer,
+    GPTTrainer
 )
 
 SEED = 1234
@@ -41,6 +42,8 @@ elif args.model_kind in ["tacotron_based"]:
     trainer = Seq2SeqTrainer(args.config, args.model_kind)
 elif args.model_kind in ['baseline',"cbhg"]:
     trainer = CBHGTrainer(args.config, args.model_kind)
+elif args.model_kind in ['gpt']:
+    trainer = GPTTrainer(args.config, args.model_kind)
 else:
     raise ValueError("The model kind is not supported")
 

@@ -12,7 +12,7 @@ from tqdm import trange
 
 from config_manager import ConfigManager
 from dataset import load_iterators
-from diacritizer import CBHGDiacritizer, Seq2SeqDiacritizer
+from diacritizer import CBHGDiacritizer, Seq2SeqDiacritizer, GPTDiacritizer
 from util.learning_rates import LearningRateDecay
 from options import OptimizerType
 from util.utils import (
@@ -81,6 +81,8 @@ class GeneralTrainer(Trainer):
             self.diacritizer = CBHGDiacritizer(self.config_path, self.model_kind)
         elif self.model_kind in ["seq2seq", "tacotron_based"]:
             self.diacritizer = Seq2SeqDiacritizer(self.config_path, self.model_kind)
+        elif self.model_kind in ['gpt']:
+            self.diacritizer = GPTDiacritizer(self.config_path, self.model_kind)
 
     def initialize_model(self):
         if self.global_step > 1:
@@ -416,6 +418,8 @@ class Seq2SeqTrainer(GeneralTrainer):
             global_step=self.global_step,
         )
 
+class GPTTrainer(GeneralTrainer):
+    pass
 
 class CBHGTrainer(GeneralTrainer):
     pass
