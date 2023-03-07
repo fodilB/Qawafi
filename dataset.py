@@ -65,6 +65,7 @@ class DiacritizationDataset(Dataset):
 
         data = self.data[id]
         non_cleaned = data
+        
         data = self.text_encoder.clean(data)
         try:
           text, inputs, diacritics = util.extract_haraqat(data)

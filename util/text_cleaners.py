@@ -76,7 +76,7 @@ def valid_arabic_cleaners(text):
     cnt = 0  
     while( i < len(text)):
 
-      # don't three consecutive tashkeel
+      # don't allow three consecutive tashkeel
       if text[i] in all_tashkeel:
         cnt += 1 
       else:
@@ -111,9 +111,10 @@ def valid_arabic_cleaners(text):
          
 
       # don't allow consecutive haraqat # add condition to remove two consecutvei tanween and sukun
-      if not(i > 0 and not_valid_tashkeel_comb((text[i], text[i-1]))):
-        if not(text[i] in all_tashkeel and text[i-1] == " "): # don't allow space followed by tashkeel
-          out += text[i]
+      if i > 0 and i < len(text):
+        if not(not_valid_tashkeel_comb((text[i], text[i-1]))):
+          if not(text[i] in all_tashkeel and text[i-1] == " "): # don't allow space followed by tashkeel
+            out += text[i]
       i += 1
     
     # only allow tanween before alef
