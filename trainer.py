@@ -153,10 +153,13 @@ class GeneralTrainer(Trainer):
         self.diacritizer.set_model(self.model)
         evaluated_batches = 0
         tqdm.set_description(f"Calculating DER/WER {self.global_step}: ")
-        for batch in iterator:
+        for i, batch in enumerate(iterator):
+            if i > 100:
+              break
+              
             if evaluated_batches > int(self.config["error_rates_n_batches"]):
                 break
-
+            
             predicted = self.diacritizer.diacritize_batch(batch)
             all_predicted += predicted
             all_orig += batch["original"]

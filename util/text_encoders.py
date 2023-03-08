@@ -24,19 +24,24 @@ class TextEncoder:
         self.input_symbols: List[str] = [TextEncoder.pad] + input_chars
         self.target_symbols: List[str] = [TextEncoder.pad] + target_charts
 
-        if sp_model_path is not None:
+        if sp_model_path is None:
           self.input_symbol_to_id: Dict[str, int] = {
               s: i for i, s in enumerate(self.input_symbols)
           }
+          self.input_id_to_symbol: Dict[int, str] = {
+            i: s for i, s in enumerate(self.input_symbols)
+        }
         else:
           sp_model = spm.SentencePieceProcessor()
-          sp_model.load(sp_model_path + 'sp.model')
+          sp_model.load(sp_model_path + '/sp.model')
           self.input_symbol_to_id: Dict[str, int] = {
               s: sp_model.PieceToId(s) for s in self.input_symbols
           }
-        self.input_id_to_symbol: Dict[int, str] = {
-            i: s for i, s in enumerate(self.input_symbols)
-        }
+          self.input_symbol_to_id[' '] = sp_model.PieceToId("|") #encode space
+          self.input_space_id = sp_model.PieceToId("|")
+          self.input_id_to_symbol: Dict[int, str] = {
+              i:s for s, i in self.input_symbol_to_id.items()
+          }
 
         self.target_symbol_to_id: Dict[str, int] = {
             s: i for i, s in enumerate(self.target_symbols)
@@ -100,6 +105,8 @@ class TextEncoder:
             if input_id == self.input_pad_id:
                 break
             output += self.input_id_to_symbol[input_id]
+            if input_id == self.input_space_id:
+              continue
             output += self.target_id_to_symbol[output_ids[i]]
         return output
 
