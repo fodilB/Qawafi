@@ -67,6 +67,7 @@ class DiacritizationDataset(Dataset):
         non_cleaned = data
         
         data = self.text_encoder.clean(data)
+        data = data[:self.config['max_sen_len']]
         try:
           text, inputs, diacritics = util.extract_haraqat(data)
         except:
@@ -76,8 +77,6 @@ class DiacritizationDataset(Dataset):
         inputs = torch.Tensor(self.text_encoder.input_to_sequence("".join(inputs)))
         diacritics = torch.Tensor(self.text_encoder.target_to_sequence(diacritics))
 
-        inputs = inputs[:256]
-        diacritics = diacritics[:256]
         return inputs, diacritics, text
 
 

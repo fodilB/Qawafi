@@ -154,9 +154,6 @@ class GeneralTrainer(Trainer):
         evaluated_batches = 0
         tqdm.set_description(f"Calculating DER/WER {self.global_step}: ")
         for i, batch in enumerate(iterator):
-            if i > 100:
-              break
-              
             if evaluated_batches > int(self.config["error_rates_n_batches"]):
                 break
             
