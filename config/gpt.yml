@@ -36,7 +36,8 @@ optimizer_type: Adam
 device: cuda
 
 # LOGGING
-evaluate_frequency: 5000
+evaluate_frequency: 50000000
+max_eval_batches: 100
 evaluate_with_error_rates_frequency: 5000
 n_predicted_text_tensorboard: 10 # To be written to the tensorboard
 model_save_frequency: 5000

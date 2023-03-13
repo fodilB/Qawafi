@@ -23,6 +23,10 @@ from util.utils import (
     repeater,
 )
 
+import wandb
+
+wandb.login()
+
 
 class Trainer:
     def run(self):
@@ -47,7 +51,7 @@ class GeneralTrainer(Trainer):
         self.text_encoder = self.config_manager.text_encoder
         self.start_symbol_id = self.text_encoder.start_symbol_id
         self.summary_manager = SummaryWriter(log_dir=self.config_manager.log_dir)
-
+        wandb.init(project="diacratization", config=self.config)
         self.model = self.config_manager.get_model()
 
         self.optimizer = self.get_optimizer()
@@ -81,7 +85,7 @@ class GeneralTrainer(Trainer):
             self.diacritizer = CBHGDiacritizer(self.config_path, self.model_kind)
         elif self.model_kind in ["seq2seq", "tacotron_based"]:
             self.diacritizer = Seq2SeqDiacritizer(self.config_path, self.model_kind)
-        elif self.model_kind in ['gpt']:
+        elif self.model_kind in ["gpt"]:
             self.diacritizer = GPTDiacritizer(self.config_path, self.model_kind)
 
     def initialize_model(self):
@@ -139,8 +143,10 @@ class GeneralTrainer(Trainer):
                 acc = categorical_accuracy(
                     predictions, targets.to(self.device), self.pad_idx
                 )
+
                 epoch_loss += loss.item()
                 epoch_acc += acc.item()
+                wandb.log({"evaluate_loss": loss.item(), "evaluate_acc": acc.item()})
                 tqdm.update()
 
         tqdm.reset()
@@ -156,10 +162,12 @@ class GeneralTrainer(Trainer):
         for i, batch in enumerate(iterator):
             if evaluated_batches > int(self.config["error_rates_n_batches"]):
                 break
-            
+
             predicted = self.diacritizer.diacritize_batch(batch)
             all_predicted += predicted
             all_orig += batch["original"]
+            if i > self.config["max_eval_batches"]:
+                break
             tqdm.update()
 
         summary_texts = []
@@ -168,6 +176,7 @@ class GeneralTrainer(Trainer):
             self.config_manager.prediction_dir, f"predicted.txt"
         )
 
+        table = wandb.Table(columns=["original", "predicted"])
         with open(orig_path, "w", encoding="utf8") as file:
             for sentence in all_orig:
                 file.write(f"{sentence}\n")
@@ -183,6 +192,10 @@ class GeneralTrainer(Trainer):
             summary_texts.append(
                 (f"eval-text/{i}", f"{ all_orig[i]} |->  {all_predicted[i]}")
             )
+            if i < 10:
+                table.add_data(all_orig[i], all_predicted[i])
+
+        wandb.log({f"prediction_{self.global_step}": table}, commit=False)
 
         results["DER"] = der.calculate_der_from_path(orig_path, predicted_path)
         results["DER*"] = der.calculate_der_from_path(
@@ -192,6 +205,7 @@ class GeneralTrainer(Trainer):
         results["WER*"] = wer.calculate_wer_from_path(
             orig_path, predicted_path, case_ending=False
         )
+        wandb.log(results)
         tqdm.reset()
         return results, summary_texts
 
@@ -238,6 +252,7 @@ class GeneralTrainer(Trainer):
                 self.optimizer.step()
 
             self.losses.append(step_results["loss"].item())
+            wandb.log({"train_loss": step_results["loss"].item()})
 
             self.print_losses(step_results, tqdm)
 
@@ -418,8 +433,10 @@ class Seq2SeqTrainer(GeneralTrainer):
             global_step=self.global_step,
         )
 
+
 class GPTTrainer(GeneralTrainer):
     pass
+
 
 class CBHGTrainer(GeneralTrainer):
     pass

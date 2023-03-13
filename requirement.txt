@@ -7,3 +7,6 @@ tensorboard==2.4.0
 diacritization-evaluation==0.5
 tqdm==4.56.0
 pyarabic
+datasets
+sentencepiece
+wandb
