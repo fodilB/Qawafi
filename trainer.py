@@ -51,7 +51,7 @@ class GeneralTrainer(Trainer):
         self.text_encoder = self.config_manager.text_encoder
         self.start_symbol_id = self.text_encoder.start_symbol_id
         self.summary_manager = SummaryWriter(log_dir=self.config_manager.log_dir)
-        wandb.init(project="diacratization", config=self.config)
+        wandb.init(project="diacratization", name=self.model_kind, config=self.config)
         self.model = self.config_manager.get_model()
 
         self.optimizer = self.get_optimizer()

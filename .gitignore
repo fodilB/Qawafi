@@ -131,3 +131,4 @@ dmypy.json
 data
 log*
 pyrightconfig.json
+wandb/*

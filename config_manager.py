@@ -10,7 +10,7 @@ import torch
 
 from models.baseline import BaseLineModel
 from models.cbhg import CBHGModel
-from models.gpt import GPTModel 
+from models.gpt import GPTModel
 from models.seq2seq import Decoder as Seq2SeqDecoder, Encoder as Seq2SeqEncoder, Seq2Seq
 from models.tacotron_based import (
     Decoder as TacotronDecoder,
@@ -30,13 +30,7 @@ class ConfigManager:
     """Co/home/almodhfer/Projects/daicritization/temp_results/CA_MSA/cbhg-new/model-10.ptnfig Manager"""
 
     def __init__(self, config_path: str, model_kind: str):
-        available_models = [
-            "baseline",
-            "cbhg",
-            "seq2seq",
-            "tacotron_based",
-            "gpt"
-        ]
+        available_models = ["baseline", "cbhg", "seq2seq", "tacotron_based", "gpt"]
         if model_kind not in available_models:
             raise TypeError(f"model_kind must be in {available_models}")
         self.config_path = Path(config_path)
@@ -62,7 +56,10 @@ class ConfigManager:
         self.prediction_dir = Path(os.path.join(self.base_dir, "predictions"))
         self.plot_dir = Path(os.path.join(self.base_dir, "plots"))
         self.models_dir = Path(os.path.join(self.base_dir, "models"))
-        self.sp_model_path = self.config["sp_model_path"]
+        if "sp_model_path" in self.config:
+            self.sp_model_path = self.config["sp_model_path"]
+        else:
+            self.sp_model_path = None
         self.text_encoder: TextEncoder = self.get_text_encoder()
         self.config["len_input_symbols"] = len(self.text_encoder.input_symbols)
         self.config["len_target_symbols"] = len(self.text_encoder.target_symbols)
@@ -258,7 +255,7 @@ class ConfigManager:
             embedding_dim=self.config["encoder_embedding_dim"],
             inp_vocab_size=self.config["len_input_symbols"],
             layers_units=self.config["encoder_units"],
-            use_batch_norm=self.config['use_batch_norm']
+            use_batch_norm=self.config["use_batch_norm"],
         )
 
         decoder = TacotronDecoder(
@@ -319,14 +316,13 @@ class ConfigManager:
         ]:
             raise Exception(f"cleaner is not known {self.config['text_cleaner']}")
 
-        
         if self.config["text_encoder"] == "BasicArabicEncoder":
-            text_encoder = BasicArabicEncoder(cleaner_fn=self.config["text_cleaner"],
-                sp_model_path = self.sp_model_path)
+            text_encoder = BasicArabicEncoder(
+                cleaner_fn=self.config["text_cleaner"], sp_model_path=self.sp_model_path
+            )
         elif self.config["text_encoder"] == "ArabicEncoderWithStartSymbol":
             text_encoder = ArabicEncoderWithStartSymbol(
-                cleaner_fn=self.config["text_cleaner"],
-                sp_model_path = self.sp_model_path
+                cleaner_fn=self.config["text_cleaner"], sp_model_path=self.sp_model_path
             )
         else:
             raise Exception(

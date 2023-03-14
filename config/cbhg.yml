@@ -2,7 +2,7 @@ session_name: base
 
 data_directory: "data"
 data_type: "CA_MSA"
-log_directory: "/content/drive/MyDrive/Research/Barmajan/Diacritization/log_dir"
+log_directory: "log_dir_cbhg"
 load_training_data: true
 load_test_data: false
 load_validation_data: true
@@ -16,9 +16,9 @@ diacritics_separator: '*'  # Required if the data already processed
 text_encoder: ArabicEncoderWithStartSymbol
 text_cleaner: valid_arabic_cleaners # a white list that uses only Arabic letters, punctuations, and a space
 max_len: 600 # sentences larger than this size will not be used
+max_sen_len: null
 
-
-max_steps: 2_000_000
+max_steps: 5000
 learning_rate: 0.001
 batch_size: 32
 adam_beta1: 0.9
@@ -39,8 +39,9 @@ optimizer_type: Adam
 device: cuda
 
 # LOGGING
-evaluate_frequency: 5000
-evaluate_with_error_rates_frequency: 5000
+evaluate_frequency: 50000000
+max_eval_batches: 100
+evaluate_with_error_rates_frequency: 1000
 n_predicted_text_tensorboard: 10 # To be written to the tensorboard
 model_save_frequency: 5000
 train_plotting_frequency: 50000000 # No plotting for this model
