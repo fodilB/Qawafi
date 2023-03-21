@@ -7,7 +7,7 @@ from gpt_model import Model, HParams
 
 
 class GPTModel(nn.Module):
-    def __init__(self, path):
+    def __init__(self, path, n_layer=-1, freeze=True, use_lstm=False):
         super().__init__()
         root = Path(path)
 
@@ -19,12 +19,16 @@ class GPTModel(nn.Module):
         state_dict = self.fixed_state_dict(state["state_dict"])
         self.model.load_state_dict(state_dict)
         self.activation = {}
-
-        for param in self.model.parameters():
-            param.requires_grad = False
+        self.freeze = freeze
+        self.n_layer = n_layer
+        if self.freeze:
+            for param in self.model.parameters():
+                param.requires_grad = False
 
         self.activation = {}
-        self.set_hook(0)
+        self.use_lstm = use_lstm
+        self.set_hook(self.n_layer)
+        self.in_fc_layer = 512 if self.use_lstm else 768
         self.lstm1 = nn.LSTM(
             768,
             256,
@@ -43,7 +47,7 @@ class GPTModel(nn.Module):
             bidirectional=True,
             batch_first=True,
         )
-        self.fc = nn.Linear(512, 17)
+        self.fc = nn.Linear(self.in_fc_layer, 17)
 
     def get_activation(self, name):
         def hook(model, input, output):
@@ -65,9 +69,13 @@ class GPTModel(nn.Module):
         # logits shape [batch_size, 256, 500]
         logits = self.model(src)["logits"]
         logits = self.activation["feats"]
-        x, (h, cn) = self.lstm1(logits)
-        x, (h, cn) = self.lstm2(x)
-        x, (h, cn) = self.lstm3(x)
+
+        if self.use_lstm:
+            x, (h, cn) = self.lstm1(logits)
+            x, (h, cn) = self.lstm2(x)
+            x, (h, cn) = self.lstm3(x)
+        else:
+            x = logits
         predictions = self.fc(x)
 
         output = {"diacritics": predictions}

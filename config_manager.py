@@ -220,7 +220,12 @@ class ConfigManager:
             return self.get_gpt()
 
     def get_gpt(self):
-        model = GPTModel(self.config["base_model_path"])
+        model = GPTModel(
+            self.config["base_model_path"],
+            freeze=self.config["freeze"],
+            n_layer=self.config["n_layer"],
+            use_lstm=self.config["use_lstm"],
+        )
         return model
 
     def get_baseline(self):
