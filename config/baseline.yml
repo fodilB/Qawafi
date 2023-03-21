@@ -30,7 +30,9 @@ n_layers: 3
 layers_units: [256, 256, 256]
 use_mixed_precision: false
 optimizer_type: Adam
+use_batch_norm: False
 device: cuda
+max_sen_len: 256
 
 # LOGGING
 evaluate_frequency: 5000

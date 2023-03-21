@@ -34,7 +34,7 @@ class Trainer:
 
 
 class GeneralTrainer(Trainer):
-    def __init__(self, config_path: str, model_kind: str) -> None:
+    def __init__(self, config_path: str, model_kind: str, model_desc: str) -> None:
         self.config_path = config_path
         self.model_kind = model_kind
         self.config_manager = ConfigManager(
@@ -51,7 +51,9 @@ class GeneralTrainer(Trainer):
         self.text_encoder = self.config_manager.text_encoder
         self.start_symbol_id = self.text_encoder.start_symbol_id
         self.summary_manager = SummaryWriter(log_dir=self.config_manager.log_dir)
-        wandb.init(project="diacratization", name=self.model_kind, config=self.config)
+        if model_desc == "":
+            model_desc = self.model_kind
+        wandb.init(project="diacratization", name=model_desc, config=self.config)
         self.model = self.config_manager.get_model()
 
         self.optimizer = self.get_optimizer()

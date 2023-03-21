@@ -1,10 +1,8 @@
 session_name: base
 
 data_directory: "data"
-base_model_path: "../drive/My Drive/ashaar-from-scratch-with-spaces-no-tatweel-epochs-75"
-sp_model_path: "../drive/My Drive/ashaar-from-scratch-with-spaces-no-tatweel-epochs-75"
 data_type: "CA_MSA"
-log_directory: "log_dir_gpt3"
+log_directory: "log_dir"
 load_training_data: true
 load_test_data: false
 load_validation_data: true
@@ -18,12 +16,11 @@ diacritics_separator: '*'  # Required if the data already processed
 text_encoder: ArabicEncoderWithStartSymbol
 text_cleaner: valid_arabic_cleaners # a white list that uses only Arabic letters, punctuations, and a space
 max_len: 600 # sentences larger than this size will not be used
-max_sen_len: 256
 
 
-max_steps: 5_000
+max_steps: 2_000_000
 learning_rate: 0.001
-batch_size: 16
+batch_size: 64
 adam_beta1: 0.9
 adam_beta2: 0.999
 use_decay: true
@@ -33,12 +30,14 @@ n_layers: 3
 layers_units: [256, 256, 256]
 use_mixed_precision: false
 optimizer_type: Adam
+use_batch_norm: False
 device: cuda
+max_sen_len: 256
 
 # LOGGING
 evaluate_frequency: 50000000
 max_eval_batches: 100
-evaluate_with_error_rates_frequency: 1000
+evaluate_with_error_rates_frequency: 10000
 n_predicted_text_tensorboard: 10 # To be written to the tensorboard
 model_save_frequency: 5000
 train_plotting_frequency: 50000000 # No plotting for this model
