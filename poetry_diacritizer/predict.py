@@ -128,8 +128,7 @@ class DiacritizationTester(GeneralTrainer):
         self.model = self.config_manager.get_model()
 
         self.model = self.model.to(self.device)
-        print(self.config["test_model_path"])
-        self.load_model(model_path=self.config["test_model_path"], load_optimizer=False)
+        self.load_model(model_path=model_path, load_optimizer=False)
         self.load_diacritizer()
         self.diacritizer.set_model(self.model)
         self.initialize_model()
