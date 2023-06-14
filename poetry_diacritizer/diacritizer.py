@@ -1,6 +1,6 @@
 from typing import Dict
 import torch
-from config_manager import ConfigManager
+from .config_manager import ConfigManager
 
 
 class Diacritizer:

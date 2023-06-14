@@ -4,7 +4,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from options import AttentionType
+from poetry_diacritizer.options import AttentionType
 
 
 class BahdanauAttention(nn.Module):

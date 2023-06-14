@@ -5,11 +5,11 @@ import torch
 from torch import nn
 from torch.autograd import Variable
 
-from modules.attention import AttentionWrapper
-from modules.layers import ConvNorm
-from modules.tacotron_modules import CBHG, Prenet
-from options import AttentionType
-from util.utils import get_mask_from_lengths
+from poetry_diacritizer.modules.attention import AttentionWrapper
+from poetry_diacritizer.modules.layers import ConvNorm
+from poetry_diacritizer.modules.tacotron_modules import CBHG, Prenet
+from poetry_diacritizer.options import AttentionType
+from poetry_diacritizer.util.utils import get_mask_from_lengths
 
 
 class Seq2Seq(nn.Module):

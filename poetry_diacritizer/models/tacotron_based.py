@@ -1,6 +1,6 @@
 from typing import List
-from models.seq2seq import Seq2Seq, Decoder as Seq2SeqDecoder
-from modules.tacotron_modules import CBHG, Prenet
+from poetry_diacritizer.models.seq2seq import Seq2Seq, Decoder as Seq2SeqDecoder
+from poetry_diacritizer.modules.tacotron_modules import CBHG, Prenet
 from torch import nn
 
 

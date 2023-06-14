@@ -1,5 +1,5 @@
 import re
-from util.constants import VALID_ARABIC
+from .constants import VALID_ARABIC
 from itertools import product, combinations
 
 _whitespace_re = re.compile(r"\s+")

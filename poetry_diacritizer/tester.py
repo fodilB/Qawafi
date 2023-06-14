@@ -1,4 +1,4 @@
-from config_manager import ConfigManager
+from .config_manager import ConfigManager
 import os
 from typing import Dict
 

@@ -3,7 +3,7 @@ from torch import nn
 import torch
 from pathlib import Path
 import json
-from gpt_model import Model, HParams
+from .gpt_model import Model, HParams
 
 
 class GPTModel(nn.Module):

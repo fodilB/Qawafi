@@ -10,12 +10,12 @@ from torch.utils.tensorboard.writer import SummaryWriter
 from tqdm import tqdm
 from tqdm import trange
 
-from config_manager import ConfigManager
+from .config_manager import ConfigManager
 from dataset import load_iterators
 from diacritizer import CBHGDiacritizer, Seq2SeqDiacritizer, GPTDiacritizer
-from util.learning_rates import LearningRateDecay
-from options import OptimizerType
-from util.utils import (
+from poetry_diacritizer.util.learning_rates import LearningRateDecay
+from poetry_diacritizer.options import OptimizerType
+from poetry_diacritizer.util.utils import (
     categorical_accuracy,
     count_parameters,
     initialize_weights,

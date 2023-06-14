@@ -1,6 +1,6 @@
-from util import text_cleaners
+from . import text_cleaners
 from typing import Dict, List, Optional
-from util.constants import ALL_POSSIBLE_HARAQAT
+from .constants import ALL_POSSIBLE_HARAQAT
 import sentencepiece as spm
 
 

@@ -9,17 +9,17 @@ from torch.cuda.amp import autocast
 from torch.utils.tensorboard.writer import SummaryWriter
 from tqdm.notebook import tqdm
 from tqdm import trange
-from util.text_encoders import (
+from poetry_diacritizer.util.text_encoders import (
     ArabicEncoderWithStartSymbol,
 )
 from diacritization_evaluation import util 
 
-from config_manager import ConfigManager
-from dataset import load_iterators
-from diacritizer import CBHGDiacritizer, Seq2SeqDiacritizer
-from util.learning_rates import LearningRateDecay
-from options import OptimizerType
-from util.utils import (
+from .config_manager import ConfigManager
+from .dataset import load_iterators
+from .diacritizer import CBHGDiacritizer, Seq2SeqDiacritizer
+from poetry_diacritizer.util.learning_rates import LearningRateDecay
+from .options import OptimizerType
+from poetry_diacritizer.util.utils import (
     categorical_accuracy,
     count_parameters,
     initialize_weights,
