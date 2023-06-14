@@ -116,7 +116,7 @@ class GeneralTrainer(Trainer):
                     pos=pos + 4,
                 )
 
-    def evaluate(self, iterator, tqdm, use_target=True):
+    def evaluate(self, iterator, tqdm, use_target=True, log = True):
         epoch_loss = 0
         epoch_acc = 0
         self.model.eval()
@@ -148,13 +148,14 @@ class GeneralTrainer(Trainer):
 
                 epoch_loss += loss.item()
                 epoch_acc += acc.item()
-                wandb.log({"evaluate_loss": loss.item(), "evaluate_acc": acc.item()})
+                if log:
+                    wandb.log({"evaluate_loss": loss.item(), "evaluate_acc": acc.item()})
                 tqdm.update()
 
         tqdm.reset()
         return epoch_loss / len(iterator), epoch_acc / len(iterator)
 
-    def evaluate_with_error_rates(self, iterator, tqdm):
+    def evaluate_with_error_rates(self, iterator, tqdm, log = True):
         all_orig = []
         all_predicted = []
         results = {}
@@ -197,7 +198,8 @@ class GeneralTrainer(Trainer):
             if i < 10:
                 table.add_data(all_orig[i], all_predicted[i])
 
-        wandb.log({f"prediction_{self.global_step}": table}, commit=False)
+        if log:
+            wandb.log({f"prediction_{self.global_step}": table}, commit=False)
 
         results["DER"] = der.calculate_der_from_path(orig_path, predicted_path)
         results["DER*"] = der.calculate_der_from_path(
@@ -207,7 +209,8 @@ class GeneralTrainer(Trainer):
         results["WER*"] = wer.calculate_wer_from_path(
             orig_path, predicted_path, case_ending=False
         )
-        wandb.log(results)
+        if log:
+            wandb.log(results)
         tqdm.reset()
         return results, summary_texts
 

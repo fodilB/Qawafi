@@ -1,0 +1,47 @@
+سلام
+سلام
+no problems
+سَلام
+سَلام
+no problems
+لا قُنوطَ مِنْ رَحْمَةِ اللهِ
+لا قُنوطَ مِنْ رَحْمَةِ اللهِ
+harkah on space
+لا َقُنوطَ مِنْ رَحْمَةِ اللهِ
+لا قُنوطَ مِنْ رَحْمَةِ اللهِ
+no problems
+بَرَكاتُُ اللهِ
+بَرَكاتُ اللهِ
+remove special characters
+أم مريم: السلام عليكم ورحمة الله وبركاته
+أم مريم السلام عليكم ورحمة الله وبركاته
+don't fathah followed by tanween
+مَشِِِيئَةُ اللهِ
+مَشِيئَةُ اللهِ
+no problems
+حيَّاكُم الله
+حيَّاكُم الله
+don't allow three consecutive harakat
+حيََّاكُم الله
+حيَّاكُم الله
+move harakah to previous before alef
+جماَل الخلق
+جمَال الخلق
+same as before
+جمَاَل الخلق
+جمَال الخلق
+multiple tanween
+أهلاًً وسهلاًً
+أهلًا وسهلًا
+multiple tanween dammah
+جميلٌٌ
+جميلٌ
+don't start by harakah
+ُجميل
+جميل
+multiple harakat at the start
+ًَُجميل
+جميل
+dont remove harakah after shaddah
+وَالشَّهَوَاتُ
+وَالشَّهَوَاتُ

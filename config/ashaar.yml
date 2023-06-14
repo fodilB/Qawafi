@@ -43,7 +43,7 @@ evaluate_frequency: 50000000
 max_eval_batches: 100
 evaluate_with_error_rates_frequency: 1000
 n_predicted_text_tensorboard: 10 # To be written to the tensorboard
-model_save_frequency: 5000
+model_save_frequency: 1000
 train_plotting_frequency: 50000000 # No plotting for this model
 n_steps_avg_losses: [100, 500, 1_000, 5_000] # command line display of average loss values for the last n steps
 error_rates_n_batches: 10000 # if calculating error rate is slow, then you can specify the number of batches to be calculated

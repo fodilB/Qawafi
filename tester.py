@@ -45,8 +45,8 @@ class DiacritizationTester(GeneralTrainer):
         tqdm_eval = trange(0, len(test_iterator), leave=True)
         tqdm_error_rates = trange(0, len(test_iterator), leave=True)
 
-        loss, acc = self.evaluate(test_iterator, tqdm_eval)
-        error_rates, _ = self.evaluate_with_error_rates(test_iterator, tqdm_error_rates)
+        loss, acc = self.evaluate(test_iterator, tqdm_eval, log = False)
+        error_rates, _ = self.evaluate_with_error_rates(test_iterator, tqdm_error_rates, log = False)
 
         tqdm_eval.close()
         tqdm_error_rates.close()

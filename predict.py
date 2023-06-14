@@ -105,17 +105,19 @@ class GeneralTrainer(Trainer):
       self.global_step = saved_model["global_step"] + 1
 
 class DiacritizationTester(GeneralTrainer):
-    def __init__(self, config_path: str, model_kind: str) -> None:
-        if config_path == 'config/test.yml' or config_path == "Arabic_Diacritization/config/test.yml":
-          print("Exporting the pretrained models ... ")
-          url = 'https://drive.google.com/uc?id=12aYNY7cbsLNzhdPdC2K3u1sgrb1lpzwO' 
-          gdown.cached_download(url,'model.zip', quiet=False, postprocess=gdown.extractall)
+    def __init__(self, config_path: str, model_kind: str, model_path: str) -> None:
+        # if config_path == 'config/test.yml' or config_path == "Arabic_Diacritization/config/test.yml":
+        #   print("Exporting the pretrained models ... ")
+        #   url = 'https://drive.google.com/uc?id=12aYNY7cbsLNzhdPdC2K3u1sgrb1lpzwO' 
+        #   gdown.cached_download(url,'model.zip', quiet=False, postprocess=gdown.extractall)
+        
         self.config_path = config_path
         self.model_kind = model_kind
         self.config_manager = ConfigManager(
             config_path=config_path, model_kind=model_kind
         )
         self.config = self.config_manager.config
+        # print(self.config)
         self.pad_idx = 0
         self.criterion = nn.CrossEntropyLoss(ignore_index=self.pad_idx)
         self.set_device()
@@ -126,7 +128,7 @@ class DiacritizationTester(GeneralTrainer):
         self.model = self.config_manager.get_model()
 
         self.model = self.model.to(self.device)
-
+        print(self.config["test_model_path"])
         self.load_model(model_path=self.config["test_model_path"], load_optimizer=False)
         self.load_diacritizer()
         self.diacritizer.set_model(self.model)
@@ -161,8 +163,7 @@ class DiacritizationTester(GeneralTrainer):
             "lengths": torch.LongTensor(src_lengths),  # src_lengths = trg_lengths
         }
         return batch
-
-        
+    
     def get_batch(self, sentence):
       data = self.text_encoder.clean(sentence)
       text, inputs, diacritics = util.extract_haraqat(data)

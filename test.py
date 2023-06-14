@@ -20,6 +20,7 @@ def train_parser():
     parser.add_argument("--model", dest="model_kind", type=str, required=True)
     parser.add_argument("--config", dest="config", type=str, required=True)
     parser.add_argument("--model_path", dest="model_path", type=str, required=False)
+    parser.add_argument("--test", dest="test", type=bool)
     return parser
 
 

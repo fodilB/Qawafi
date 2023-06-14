@@ -3,7 +3,7 @@ session_name: base
 data_directory: "data"
 data_type: "CA_MSA"
 log_directory: "log_dir"
-base_model_path: "/content/drive/MyDrive/ashaar-from-scratch-with-spaces-no-tatweel-epochs-75"
+base_model_path: "ashaar-from-scratch-with-spaces-no-tatweel-epochs-75"
 load_training_data: true
 load_test_data: false
 load_validation_data: true
@@ -32,7 +32,7 @@ device: cuda
 max_sen_len: 256
 freeze: True
 n_layer: -1
-use_lstm: True
+use_lstm: False
 
 # LOGGING
 evaluate_frequency: 50000000

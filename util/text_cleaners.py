@@ -23,11 +23,17 @@ def basic_cleaners(text):
 harakat = ["\u0650", "\u064E", "\u064F"]  # [kasra, fatha, damma, ]
 sukun = ["\u0652"]  # [sukun]
 mostly_saken = [
-    "\u0627",
-    "\u0648",
-    "\u0649",
-    "\u064A",
+  "\u0627",
+  "\u0648",
+  "\u0649",
+  "\u064A",
 ]  # [alef, waw, alef maqsurah, ya'a]
+
+always_saken = [
+  "\u0627",
+  "\u0649",
+]
+
 tnween_chars = [
     "\u064c",
     "\u064d",
@@ -52,36 +58,48 @@ def remove_tanween_on_alef(text):
   for i in range(0, len(text)):
 
     # if there is shaddah or character followed by alef followed by tanween add
-    if i < len(text) - 2 and text[i] in all_chars+shadda_chars and text[i+1] in ["ا", "ى"] and text[i+2] == tnween_chars[2]:
+    if i < len(text) - 2 and text[i] in all_chars+shadda_chars and text[i+1] in always_saken and text[i+2] == tnween_chars[2]:
       text_copy += text[i] + tnween_chars[2]
     
     #ignore current harakah if there is alef followed by tanween
-    elif i < len(text) - 2 and text[i] in harakat and text[i+1] in ["ا", "ى"] and text[i+2] == tnween_chars[2] : 
+    elif i < len(text) - 2 and text[i] in harakat and text[i+1] in always_saken and text[i+2] == tnween_chars[2] : 
       text_copy += tnween_chars[2]
 
     # if the current char is tanween with alef is the previous character drop tanween
-    elif i > 0 and text[i] == tnween_chars[2] and text[i-1] in ["ا", "ى"]:
+    elif i > 0 and text[i] == tnween_chars[2] and text[i-1] in always_saken:
       continue
 
     else:
       text_copy += text[i]
   return text_copy
 
+def dont_start_by_harakah(text):
+    text_copy = ""
+    for i, char in enumerate(text):
+      if not(char in all_tashkeel):
+        text_copy = text[i:]
+        break 
+    return text_copy
+        
 def valid_arabic_cleaners(text):
+  prev_text = text
+  for i in range(5):
+    text = prev_text
+    cleaned_text = ""
     text = filter(lambda char: char in VALID_ARABIC, text)
     text = collapse_whitespace(''.join(list(text)))
+    text = dont_start_by_harakah(text)
     text = text.strip()
-    out = ""
     i = 0
-    cnt = 0  
-    while( i < len(text)):
-
-      # don't allow three consecutive tashkeel
+    cnt = 0
+    len_text = len(text)
+    while( i < len_text):
       if text[i] in all_tashkeel:
         cnt += 1 
       else:
         cnt = 0
 
+      # don't allow three consecutive tashkeel
       if cnt > 2:
         i+= 1
         continue
@@ -101,23 +119,28 @@ def valid_arabic_cleaners(text):
         i += 1
         continue
 
-      # don't allow harkah on alef
-      if i> 1 and text[i] in harakat and text[i-1] in ["ا"] :
+      # only allow permissable combinations
+      if not_valid_tashkeel_comb((text[i], text[i-1])):
+        i+=1
+        continue
+
+      # don't allow harkah on alef, alef maqsura, if there is no tashkeel before move it back
+      if i> 1 and text[i] in harakat and text[i-1] in always_saken :
         if text[i-2] in all_tashkeel: # in case there is a tashkeelah before alef
           continue
         else:
-          out = text[:i-1]+harakat[1]+"ا"
+          cleaned_text = text[:i-1]+text[i]+ always_saken[always_saken.index(text[i-1])]
           i += 1 
          
-
-      # don't allow consecutive haraqat # add condition to remove two consecutvei tanween and sukun
-      if i > 0 and i < len(text):
-        if not(not_valid_tashkeel_comb((text[i], text[i-1]))):
-          if not(text[i] in all_tashkeel and text[i-1] == " "): # don't allow space followed by tashkeel
-            out += text[i]
-      i += 1
+      if i < len(text):
+        cleaned_text+= text[i]
+        i += 1
     
     # only allow tanween before alef
-    out = remove_tanween_on_alef(out)
-    out = re.sub(r" +", " ", out)
-    return out.strip()
+    cleaned_text = remove_tanween_on_alef(cleaned_text)
+    cleaned_text = re.sub(r" +", " ", cleaned_text).strip()
+    if prev_text == cleaned_text:
+      break
+    else:
+      prev_text = cleaned_text 
+  return cleaned_text

@@ -132,3 +132,5 @@ data
 log*
 pyrightconfig.json
 wandb/*
+ashaar
+expanded_tashkeela

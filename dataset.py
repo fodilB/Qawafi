@@ -70,11 +70,7 @@ class DiacritizationDataset(Dataset):
 
         data = self.text_encoder.clean(data)
         data = data[: self.config["max_sen_len"]]
-        try:
-            text, inputs, diacritics = util.extract_haraqat(data)
-        except:
-            text, inputs, diacritics = util.extract_haraqat(self.preprocess(data))
-            print(data)
+        text, inputs, diacritics = util.extract_haraqat(data)
 
         inputs = torch.Tensor(self.text_encoder.input_to_sequence("".join(inputs)))
         diacritics = torch.Tensor(self.text_encoder.target_to_sequence(diacritics))
@@ -176,9 +172,8 @@ def load_test_data(config_manager: ConfigManager, loader_parameters):
     else:
         with open(path, encoding="utf8") as file:
             test_data = file.readlines()
-        test_data = [
-            text for text in test_data if len(text) <= config_manager.config["max_len"]
-        ]
+        max_len = config_manager.config["max_len"]
+        test_data = [text[:max_len] for text in test_data]
         test_dataset = DiacritizationDataset(
             config_manager, [idx for idx in range(len(test_data))], test_data
         )
@@ -205,8 +200,7 @@ def load_validation_data(config_manager: ConfigManager, loader_parameters):
             nrows=config_manager.config["n_validation_examples"],
             header=None,
         )
-
-        # valid_data = valid_data[valid_data[0] <= config_manager.config["max_len"]]
+        valid_data = valid_data[valid_data[0] <= config_manager.config["max_len"]]
         valid_dataset = DiacritizationDataset(
             config_manager, valid_data.index, valid_data
         )
@@ -214,11 +208,8 @@ def load_validation_data(config_manager: ConfigManager, loader_parameters):
         with open(path, encoding="utf8") as file:
             valid_data = file.readlines()
 
-        valid_data = [
-            text
-            for text in valid_data
-            if len(text) <= config_manager.config["max_len"] and len(text) > 0
-        ]
+        max_len = config_manager.config["max_len"]
+        valid_data = [text[:max_len] for text in valid_data]
         valid_dataset = DiacritizationDataset(
             config_manager, [idx for idx in range(len(valid_data))], valid_data
         )

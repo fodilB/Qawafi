@@ -35,10 +35,10 @@ class TextEncoder:
             sp_model = spm.SentencePieceProcessor()
             sp_model.load(sp_model_path + "/sp.model")
             self.input_symbol_to_id: Dict[str, int] = {
-                s: sp_model.PieceToId(s) for s in self.input_symbols
+                s: sp_model.PieceToId(s+'▁') for s in self.input_symbols
             }
             self.input_symbol_to_id[" "] = sp_model.PieceToId("|")  # encode space
-            self.input_symbol_to_id[TextEncoder.pad] = 0  # encode space
+            self.input_symbol_to_id[TextEncoder.pad] = 0  # encode padding
 
             self.input_space_id = sp_model.PieceToId("|")
             self.input_id_to_symbol: Dict[int, str] = {
