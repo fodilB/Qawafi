@@ -8,7 +8,7 @@ with open('README.md') as readme_file:
     readme = readme_file.read()
 
 setup(name='poetry_diacritizer',
-      version='0.0.1',
+      version='0.0.2',
       url='https://github.com/zaidalyafeai/Arabic_Diacritization',
       discription="Arabic poetry diacritizer",
       long_description=readme,
