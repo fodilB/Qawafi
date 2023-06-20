@@ -8,7 +8,7 @@ from typing import Any, Dict
 import ruamel.yaml
 import torch
 
-from .models.baseline import BaseLineModel
+from poetry_diacritizer.models.baseline import BaseLineModel
 from poetry_diacritizer.models.cbhg import CBHGModel
 from poetry_diacritizer.models.gpt import GPTModel
 from poetry_diacritizer.models.seq2seq import Decoder as Seq2SeqDecoder, Encoder as Seq2SeqEncoder, Seq2Seq
