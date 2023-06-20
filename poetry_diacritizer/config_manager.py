@@ -8,11 +8,11 @@ from typing import Any, Dict
 import ruamel.yaml
 import torch
 
-from .models.baseline import BaseLineModel
-from .models.cbhg import CBHGModel
-from .models.gpt import GPTModel
-from .models.seq2seq import Decoder as Seq2SeqDecoder, Encoder as Seq2SeqEncoder, Seq2Seq
-from .models.tacotron_based import (
+from models.baseline import BaseLineModel
+from models.cbhg import CBHGModel
+from models.gpt import GPTModel
+from models.seq2seq import Decoder as Seq2SeqDecoder, Encoder as Seq2SeqEncoder, Seq2Seq
+from models.tacotron_based import (
     Decoder as TacotronDecoder,
     Encoder as TacotronEncoder,
     Tacotron,
