@@ -4,20 +4,24 @@ import torch
 from pathlib import Path
 import json
 from .gpt_model import Model, HParams
-
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 class GPTModel(nn.Module):
-    def __init__(self, path, n_layer=-1, freeze=True, use_lstm=False):
+    def __init__(self, path, n_layer=-1, freeze=True, use_lstm=False, from_hf = True):
         super().__init__()
         root = Path(path)
-
-        params = json.loads((root / "params.json").read_text())
-        hparams = params["hparams"]
-        hparams.setdefault("n_hidden", hparams["n_embed"])
-        self.model = Model(HParams(**hparams))
-        state = torch.load(root / "model.pt", map_location="cpu")
-        state_dict = self.fixed_state_dict(state["state_dict"])
-        self.model.load_state_dict(state_dict)
+        self.from_hf = from_hf
+        if self.from_hf:
+            self.model = AutoModelForCausalLM.from_pretrained('arbml/Ashaar_model')
+            print(self.model)
+        else:
+            params = json.loads((root / "params.json").read_text())
+            hparams = params["hparams"]
+            hparams.setdefault("n_hidden", hparams["n_embed"])
+            self.model = Model(HParams(**hparams))
+            state = torch.load(root / "model.pt", map_location="cpu")
+            state_dict = self.fixed_state_dict(state["state_dict"])
+            self.model.load_state_dict(state_dict)
         self.activation = {}
         self.freeze = freeze
         self.n_layer = n_layer
@@ -47,7 +51,7 @@ class GPTModel(nn.Module):
             bidirectional=True,
             batch_first=True,
         )
-        self.fc = nn.Linear(self.in_fc_layer, 17)
+        self.fc = nn.Linear(self.in_fc_layer, 16)
 
     def get_activation(self, name):
         def hook(model, input, output):
@@ -56,7 +60,10 @@ class GPTModel(nn.Module):
         return hook
 
     def set_hook(self, n_layer=0):
-        self.model.blocks[n_layer].register_forward_hook(self.get_activation("feats"))
+        if self.from_hf:
+            self.model.base_model.h[n_layer].register_forward_hook(self.get_activation("feats"))
+        else:
+            self.model.blocks[n_layer].register_forward_hook(self.get_activation("feats"))
 
     def fixed_state_dict(self, state_dict):
         if all(k.startswith("module.") for k in state_dict):

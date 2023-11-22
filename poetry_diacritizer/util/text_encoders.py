@@ -2,7 +2,7 @@ from . import text_cleaners
 from typing import Dict, List, Optional
 from .constants import ALL_POSSIBLE_HARAQAT
 import sentencepiece as spm
-
+from transformers import AutoTokenizer, AutoModelForCausalLM
 
 class TextEncoder:
     pad = "P"
@@ -15,6 +15,7 @@ class TextEncoder:
         reverse_input: bool = False,
         reverse_target: bool = False,
         sp_model_path=None,
+        from_hf=True
     ):
         if cleaner_fn:
             self.cleaner_fn = getattr(text_cleaners, cleaner_fn)
@@ -24,12 +25,31 @@ class TextEncoder:
         self.input_symbols: List[str] = [TextEncoder.pad] + input_chars
         self.target_symbols: List[str] = [TextEncoder.pad] + target_charts
 
-        if sp_model_path is None:
+        if sp_model_path is None and from_hf is None:
             self.input_symbol_to_id: Dict[str, int] = {
                 s: i for i, s in enumerate(self.input_symbols)
             }
             self.input_id_to_symbol: Dict[int, str] = {
                 i: s for i, s in enumerate(self.input_symbols)
+            }
+        elif from_hf:
+            tokenizer = AutoTokenizer.from_pretrained('arbml/Ashaar_tokenizer')
+            self.input_symbol_to_id: Dict[str, int] = {
+                s: tokenizer.convert_tokens_to_ids(s) for s in self.input_symbols if s in tokenizer.vocab
+            }
+
+            # puncts don't exist in ashaar assign them to id 43 <|res_0|>
+            for s in input_chars:
+                if s not in tokenizer.vocab:
+                    self.input_symbol_to_id[s] = 43
+
+            self.input_space_id = tokenizer.convert_tokens_to_ids(" ")
+
+            self.input_symbol_to_id[" "] = self.input_space_id # encode space
+            self.input_symbol_to_id[TextEncoder.pad] = 0  # encode padding
+
+            self.input_id_to_symbol: Dict[int, str] = {
+                i: s for s, i in self.input_symbol_to_id.items()
             }
         else:
             sp_model = spm.SentencePieceProcessor()
@@ -62,7 +82,11 @@ class TextEncoder:
         if self.reverse_input:
             text = "".join(list(reversed(text)))
         sequence = [self.input_symbol_to_id[s] for s in text if s not in [self.pad]]
-
+        # if 0 in sequence:
+        #     print(self.input_symbol_to_id)
+        #     print(text)
+        #     print(sequence)
+        #     raise('error')
         return sequence
 
     def target_to_sequence(self, text: str) -> List[int]:
@@ -124,6 +148,7 @@ class BasicArabicEncoder(TextEncoder):
         sp_model_path=None,
     ):
         input_chars: List[str] = list("بض.غىهظخة؟:طس،؛فندؤلوئآك-يذاصشحزءمأجإ ترقعث")
+        # input_chars: List[str] = list("بضغىهظخةطسفندؤلوئآكيذاصشحزءمأجإ ترقعث")
         target_charts: List[str] = list(ALL_POSSIBLE_HARAQAT.keys())
 
         super().__init__(
@@ -136,7 +161,7 @@ class BasicArabicEncoder(TextEncoder):
         )
 
 
-class ArabicEncoderWithStartSymbol(TextEncoder):
+class BasicArabicEncoder(TextEncoder):
     def __init__(
         self,
         cleaner_fn="basic_cleaners",

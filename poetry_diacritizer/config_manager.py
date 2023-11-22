@@ -20,7 +20,7 @@ from poetry_diacritizer.models.tacotron_based import (
 
 from poetry_diacritizer.options import AttentionType, LossType, OptimizerType
 from poetry_diacritizer.util.text_encoders import (
-    ArabicEncoderWithStartSymbol,
+    BasicArabicEncoder,
     BasicArabicEncoder,
     TextEncoder,
 )
@@ -325,8 +325,8 @@ class ConfigManager:
             text_encoder = BasicArabicEncoder(
                 cleaner_fn=self.config["text_cleaner"], sp_model_path=self.sp_model_path
             )
-        elif self.config["text_encoder"] == "ArabicEncoderWithStartSymbol":
-            text_encoder = ArabicEncoderWithStartSymbol(
+        elif self.config["text_encoder"] == "BasicArabicEncoder":
+            text_encoder = BasicArabicEncoder(
                 cleaner_fn=self.config["text_cleaner"], sp_model_path=self.sp_model_path
             )
         else:

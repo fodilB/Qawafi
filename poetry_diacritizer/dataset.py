@@ -9,7 +9,7 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-from .config_manager import ConfigManager
+from poetry_diacritizer.config_manager import ConfigManager
 
 BASIC_HARAQAT = {
     "َ": "Fatha              ",
@@ -74,7 +74,9 @@ class DiacritizationDataset(Dataset):
 
         inputs = torch.Tensor(self.text_encoder.input_to_sequence("".join(inputs)))
         diacritics = torch.Tensor(self.text_encoder.target_to_sequence(diacritics))
-
+        # print(text)
+        # print(inputs)
+        # print(diacritics)
         return inputs, diacritics, text
 
 
