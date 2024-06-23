@@ -6,7 +6,7 @@ from typing import List, Optional
 from torch import nn
 import torch
 
-from poetry_diacritizer.modules.tacotron_modules import CBHG, Prenet
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.modules.tacotron_modules import CBHG, Prenet
 
 
 class CBHGModel(nn.Module):

@@ -9,7 +9,7 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-from poetry_diacritizer.config_manager import ConfigManager
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.config_manager import ConfigManager
 
 BASIC_HARAQAT = {
     "َ": "Fatha              ",

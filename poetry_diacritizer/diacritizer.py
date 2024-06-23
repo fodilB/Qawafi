@@ -1,6 +1,6 @@
 from typing import Dict
 import torch
-from poetry_diacritizer.config_manager import ConfigManager
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.config_manager import ConfigManager
 
 
 class Diacritizer:

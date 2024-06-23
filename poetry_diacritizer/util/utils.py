@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch import nn
 from itertools import repeat
-from poetry_diacritizer.util.decorators import ignore_exception
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.util.decorators import ignore_exception
 from dataclasses import dataclass
 import numpy as np
 

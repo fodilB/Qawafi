@@ -8,18 +8,18 @@ from typing import Any, Dict
 import ruamel.yaml
 import torch
 
-from poetry_diacritizer.models.baseline import BaseLineModel
-from poetry_diacritizer.models.cbhg import CBHGModel
-from poetry_diacritizer.models.gpt import GPTModel
-from poetry_diacritizer.models.seq2seq import Decoder as Seq2SeqDecoder, Encoder as Seq2SeqEncoder, Seq2Seq
-from poetry_diacritizer.models.tacotron_based import (
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.models.baseline import BaseLineModel
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.models.cbhg import CBHGModel
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.models.gpt import GPTModel
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.models.seq2seq import Decoder as Seq2SeqDecoder, Encoder as Seq2SeqEncoder, Seq2Seq
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.models.tacotron_based import (
     Decoder as TacotronDecoder,
     Encoder as TacotronEncoder,
     Tacotron,
 )
 
-from poetry_diacritizer.options import AttentionType, LossType, OptimizerType
-from poetry_diacritizer.util.text_encoders import (
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.options import AttentionType, LossType, OptimizerType
+from qawafi_server.Arabic_Diacritization.poetry_diacritizer.util.text_encoders import (
     BasicArabicEncoder,
     BasicArabicEncoder,
     TextEncoder,

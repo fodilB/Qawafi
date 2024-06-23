@@ -1,1 +1,0 @@
-from poetry_diacritizer import predict
